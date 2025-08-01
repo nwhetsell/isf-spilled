@@ -140,21 +140,6 @@ float hash11(float p)
 }
 
 
-float getVal(vec2 uv)
-{
-    return length(IMG_NORM_PIXEL(bufferA, uv).xyz);
-}
-
-vec2 getGrad(vec2 uv, float delta)
-{
-    vec2 d = vec2(delta, 0.);
-    return vec2(
-        getVal(uv + d.xy) - getVal(uv - d.xy),
-        getVal(uv + d.yx) - getVal(uv - d.yx)
-    ) / delta;
-}
-
-
 void main()
 {
     if (PASSINDEX == 0) // ShaderToy Buffer A
@@ -225,8 +210,15 @@ void main()
     }
     else if (PASSINDEX == 1) // ShaderToy Image
     {
-        vec2 uv = fragCoord.xy / iResolution.xy;
-        vec3 n = vec3(getGrad(uv, 1. / iResolution.y), 1000. - fluidHeight);
+        vec2 inverseSize = 1. / RENDERSIZE;
+        vec2 uv = fragCoord.xy * inverseSize;
+
+        vec2 d = vec2(inverseSize.y, 0.);
+        vec3 n = vec3(
+            (length(IMG_NORM_PIXEL(bufferA, uv + d.xy).xyz) - length(IMG_NORM_PIXEL(bufferA, uv - d.xy).xyz)) * RENDERSIZE.y,
+            (length(IMG_NORM_PIXEL(bufferA, uv + d.yx).xyz) - length(IMG_NORM_PIXEL(bufferA, uv - d.yx).xyz)) * RENDERSIZE.y,
+            1000. - fluidHeight
+        );
 
         vec3 spread_n = n;
         for (int i = 1; i < int(spread); i++) {
