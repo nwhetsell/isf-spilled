@@ -97,18 +97,7 @@
 }
 */
 
-//
-// ShaderToy Buffer A
-//
-
-#define fragColor gl_FragColor
-#define fragCoord gl_FragCoord
-#define iFrame FRAMEINDEX
-#define iResolution RENDERSIZE
-
-//#define SUPPORT_EVEN_ROTNUM
-
-#define Res  RENDERSIZE
+// #define SUPPORT_EVEN_ROTNUM
 
 // Hash function from <https://www.shadertoy.com/view/4djSRW>, MIT-licensed:
 //
@@ -142,10 +131,13 @@ float hash11(float p)
 
 void main()
 {
+    vec2 pos = gl_FragCoord.xy;
+    vec2 inverseSize = 1. / RENDERSIZE;
+    vec2 uv = pos * inverseSize;
+
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
-        vec2 pos = fragCoord.xy;
-        float rnd = hash11(TIME / Res.x);
+        float rnd = hash11(TIME / RENDERSIZE.x);
 
         int RotNum = 2 * int(agitation) + 1;
         float ang = 2. * 3.1415926535 / float(RotNum);
@@ -159,7 +151,7 @@ void main()
         vec2 b = vec2(cos(ang * rnd), sin(ang * rnd));
         vec2 v = vec2(0.);
 
-        float bbMax = 0.7 * Res.y;
+        float bbMax = 0.7 * RENDERSIZE.y;
         bbMax *= bbMax;
 
         for (int l = 0; l < 20; l++) {
@@ -182,7 +174,7 @@ void main()
                 float rot = 0.;
                 for (int _ = 0; _ < RotNum; _++) {
                     rot += dot(
-                        IMG_NORM_PIXEL(bufferA, fract((pos_plus_p + rotated_b) / Res.xy)).xy - vec2(0.5),
+                        IMG_NORM_PIXEL(bufferA, fract((pos_plus_p + rotated_b) / RENDERSIZE)).xy - vec2(0.5),
                         rotated_b.yx * vec2(1., -1.)
                     );
                     rotated_b = m * rotated_b;
@@ -196,23 +188,20 @@ void main()
             b *= 2.;
         }
 
-        fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + fluidSpeed * vec2(-1., 1.) * v) / Res.xy));
+        gl_FragColor = IMG_NORM_PIXEL(bufferA, fract((pos + fluidSpeed * vec2(-1., 1.) * v) / RENDERSIZE));
 
         // add a little "motor" in the center
-        vec2 scr = 2. * ((fragCoord.xy / Res.xy) - motorLocation);
-        fragColor.xy += motorSize * scr.xy / (10. * dot(scr, scr) + motorAttenuation);
+        vec2 scr = 2. * (uv - motorLocation);
+        gl_FragColor.xy += motorSize * scr / (10. * dot(scr, scr) + motorAttenuation);
 
-        fragColor = (1. - inputImageAmount) * fragColor + inputImageAmount * IMG_PIXEL(inputImage, fragCoord.xy);
+        gl_FragColor = (1. - inputImageAmount) * gl_FragColor + inputImageAmount * IMG_PIXEL(inputImage, pos);
 
-        if (iFrame < 5) {
-            fragColor = IMG_PIXEL(inputImage, fragCoord.xy);
+        if (FRAMEINDEX < 5) {
+            gl_FragColor = IMG_PIXEL(inputImage, pos);
         }
     }
     else if (PASSINDEX == 1) // ShaderToy Image
     {
-        vec2 inverseSize = 1. / RENDERSIZE;
-        vec2 uv = fragCoord.xy * inverseSize;
-
         vec2 d = vec2(inverseSize.y, 0.);
         vec3 n = vec3(
             (length(IMG_NORM_PIXEL(bufferA, uv + d.xy).xyz) - length(IMG_NORM_PIXEL(bufferA, uv - d.xy).xyz)) * RENDERSIZE.y,
@@ -230,6 +219,6 @@ void main()
         float diff = clamp(dot(n, light), 0.5, 1.);
         float spec = clamp(dot(reflect(light, n), vec3(0., 0., -1.)), 0., 1.);
         spec = pow(spec, 36.) * 2.5;
-    	fragColor = IMG_NORM_PIXEL(bufferA, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
+    	gl_FragColor = IMG_NORM_PIXEL(bufferA, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
     }
 }
