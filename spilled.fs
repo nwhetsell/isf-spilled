@@ -19,12 +19,36 @@
             "MAX": 1
         },
         {
-            "NAME": "agitation",
-            "LABEL": "Agitation (whole number)",
+            "NAME": "fluidSpeed",
+            "LABEL": "Fluid speed",
             "TYPE": "float",
             "DEFAULT": 2,
             "MIN": 0,
             "MAX": 10
+        },
+        {
+            "NAME": "fluidHeight",
+            "LABEL": "Fluid height",
+            "TYPE": "float",
+            "DEFAULT": 650,
+            "MIN": 0,
+            "MAX": 1000
+        },
+        {
+            "NAME": "spread",
+            "LABEL": "Spread (whole number)",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MIN": 1,
+            "MAX": 7
+        },
+        {
+            "NAME": "specularReflectionAmount",
+            "LABEL": "Specular reflection amount",
+            "TYPE": "float",
+            "DEFAULT": 1,
+            "MIN": 0,
+            "MAX": 1
         },
         {
             "NAME": "motorLocation",
@@ -49,6 +73,14 @@
             "DEFAULT": 0.3,
             "MIN": 0,
             "MAX": 1
+        },
+        {
+            "NAME": "agitation",
+            "LABEL": "Agitation (whole number)",
+            "TYPE": "float",
+            "DEFAULT": 2,
+            "MIN": 0,
+            "MAX": 10
         }
     ],
     "ISFVSN": "2",
@@ -179,7 +211,7 @@ void main()
             b *= 2.;
         }
 
-        fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + 2. * vec2(-1., 1.) * v) / Res.xy));
+        fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + fluidSpeed * vec2(-1., 1.) * v) / Res.xy));
 
         // add a little "motor" in the center
         vec2 scr = 2. * ((fragCoord.xy / Res.xy) - motorLocation);
@@ -194,14 +226,18 @@ void main()
     else if (PASSINDEX == 1) // ShaderToy Image
     {
         vec2 uv = fragCoord.xy / iResolution.xy;
-        vec3 n = vec3(getGrad(uv, 1. / iResolution.y), 150.);
-        //n *= n;
-        n = normalize(n);
+        vec3 n = vec3(getGrad(uv, 1. / iResolution.y), 1000. - fluidHeight);
+
+        vec3 spread_n = n;
+        for (int i = 1; i < int(spread); i++) {
+            spread_n *= n;
+        }
+
+        n = normalize(spread_n);
         vec3 light = normalize(vec3(1., 1., 2.));
         float diff = clamp(dot(n, light), 0.5, 1.);
         float spec = clamp(dot(reflect(light, n), vec3(0., 0., -1.)), 0., 1.);
         spec = pow(spec, 36.) * 2.5;
-        // spec=0.0;
-    	fragColor = IMG_NORM_PIXEL(bufferA, uv) * vec4(diff) + vec4(spec);
+    	fragColor = IMG_NORM_PIXEL(bufferA, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
     }
 }
