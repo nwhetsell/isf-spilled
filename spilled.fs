@@ -111,17 +111,6 @@ vec4 randS(vec2 uv)
     return hash42(uv) - vec4(0.5);
 }
 
-float getRot(vec2 pos, vec2 b)
-{
-    vec2 p = b;
-    float rot = 0.;
-    for (int i = 0; i < RotNum; i++) {
-        rot += dot(IMG_NORM_PIXEL(bufferA, fract((pos + p) / Res.xy)).xy - vec2(0.5), p.yx * vec2(1, -1));
-        p = m * p;
-    }
-    return rot / float(RotNum) / dot(b, b);
-}
-
 
 float getVal(vec2 uv)
 {
@@ -159,12 +148,26 @@ void main()
             vec2 p = b;
 
             for (int i = 0; i < RotNum; i++) {
-                v += p.yx * getRot(pos + p,
-    #ifdef SUPPORT_EVEN_ROTNUM
-                                            -mh *
-    #endif
-                                                  // this is faster but works only for odd RotNum
-                                                  b);
+                vec2 pos_plus_p = pos + p;
+                vec2 rotated_b =
+#ifdef SUPPORT_EVEN_ROTNUM
+                                 -mh *
+#endif
+                                       // this is faster but works only for odd RotNum
+                                       b;
+                float rotated_b_magnitude_squared = dot(rotated_b, rotated_b);
+
+                float rot = 0.;
+                for (int _ = 0; _ < RotNum; _++) {
+                    rot += dot(
+                        IMG_NORM_PIXEL(bufferA, fract((pos_plus_p + rotated_b) / Res.xy)).xy - vec2(0.5),
+                        rotated_b.yx * vec2(1., -1.)
+                    );
+                    rotated_b = m * rotated_b;
+                }
+                float rotation = rot / float(RotNum) / rotated_b_magnitude_squared;
+
+                v += p.yx * rotation;
                 p = m * p;
             }
 
