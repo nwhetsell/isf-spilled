@@ -145,8 +145,6 @@ void main()
 
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
-        float rnd = hash11(TIME / RENDERSIZE.x);
-
         int RotNum = 2 * int(agitation) + 1;
         float ang = 2. * 3.1415926535 / float(RotNum);
         mat2 m = mat2( cos(ang), sin(ang),
@@ -156,6 +154,7 @@ void main()
                        -sin(ang * 0.5), cos(ang * 0.5));
 #endif
 
+        float rnd = hash11(TIME / RENDERSIZE.x);
         vec2 b = vec2(cos(ang * rnd), sin(ang * rnd));
         vec2 v = vec2(0.);
 
