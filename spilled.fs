@@ -75,6 +75,14 @@
             "MAX": 1
         },
         {
+            "NAME": "dripSize",
+            "LABEL": "Drip size",
+            "TYPE": "float",
+            "DEFAULT": 0.7,
+            "MIN": 0,
+            "MAX": 1
+        },
+        {
             "NAME": "agitation",
             "LABEL": "Agitation (whole number)",
             "TYPE": "float",
@@ -151,7 +159,7 @@ void main()
         vec2 b = vec2(cos(ang * rnd), sin(ang * rnd));
         vec2 v = vec2(0.);
 
-        float bbMax = 0.7 * RENDERSIZE.y;
+        float bbMax = dripSize * RENDERSIZE.y;
         bbMax *= bbMax;
 
         for (int l = 0; l < 20; l++) {
