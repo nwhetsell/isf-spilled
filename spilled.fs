@@ -94,7 +94,7 @@
     "ISFVSN": "2",
     "PASSES": [
         {
-            "TARGET": "bufferA",
+            "TARGET": "mainPass",
             "PERSISTENT": true,
             "FLOAT": true
         },
@@ -181,7 +181,7 @@ void main()
                 float rot = 0.;
                 for (int _ = 0; _ < RotNum; _++) {
                     rot += dot(
-                        IMG_NORM_PIXEL(bufferA, fract((pos_plus_p + rotated_b) / RENDERSIZE)).xy - vec2(0.5),
+                        IMG_NORM_PIXEL(mainPass, fract((pos_plus_p + rotated_b) / RENDERSIZE)).xy - vec2(0.5),
                         rotated_b.yx * vec2(1., -1.)
                     );
                     rotated_b = m * rotated_b;
@@ -195,7 +195,7 @@ void main()
             b *= 2.;
         }
 
-        gl_FragColor = IMG_NORM_PIXEL(bufferA, fract((pos + fluidSpeed * vec2(-1., 1.) * v) / RENDERSIZE));
+        gl_FragColor = IMG_NORM_PIXEL(mainPass, fract((pos + fluidSpeed * vec2(-1., 1.) * v) / RENDERSIZE));
 
         // add a little "motor" in the center
         vec2 scr = 2. * (uv - motorLocation);
@@ -211,8 +211,8 @@ void main()
     {
         vec2 d = vec2(inverseSize.y, 0.);
         vec3 n = vec3(
-            (length(IMG_NORM_PIXEL(bufferA, uv + d.xy).xyz) - length(IMG_NORM_PIXEL(bufferA, uv - d.xy).xyz)) * RENDERSIZE.y,
-            (length(IMG_NORM_PIXEL(bufferA, uv + d.yx).xyz) - length(IMG_NORM_PIXEL(bufferA, uv - d.yx).xyz)) * RENDERSIZE.y,
+            (length(IMG_NORM_PIXEL(mainPass, uv + d.xy).xyz) - length(IMG_NORM_PIXEL(mainPass, uv - d.xy).xyz)) * RENDERSIZE.y,
+            (length(IMG_NORM_PIXEL(mainPass, uv + d.yx).xyz) - length(IMG_NORM_PIXEL(mainPass, uv - d.yx).xyz)) * RENDERSIZE.y,
             1000. - fluidHeight
         );
 
@@ -226,6 +226,6 @@ void main()
         float diff = clamp(dot(n, light), 0.5, 1.);
         float spec = clamp(dot(reflect(light, n), vec3(0., 0., -1.)), 0., 1.);
         spec = pow(spec, 36.) * 2.5;
-    	gl_FragColor = IMG_NORM_PIXEL(bufferA, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
+    	gl_FragColor = IMG_NORM_PIXEL(mainPass, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
     }
 }
