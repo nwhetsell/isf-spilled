@@ -17,6 +17,30 @@
             "DEFAULT": 0,
             "MIN": 0,
             "MAX": 1
+        },
+        {
+            "NAME": "motorLocation",
+            "LABEL": "Motor location",
+            "TYPE": "point2D",
+            "DEFAULT": [0.5, 0.5],
+            "MIN": [0, 0],
+            "MAX": [1, 1]
+        },
+        {
+            "NAME": "motorSize",
+            "LABEL": "Motor size",
+            "TYPE": "float",
+            "DEFAULT": 0.01,
+            "MIN": 0,
+            "MAX": 1
+        },
+        {
+            "NAME": "motorAttenuation",
+            "LABEL": "Motor attenuation",
+            "TYPE": "float",
+            "DEFAULT": 0.3,
+            "MIN": 0,
+            "MAX": 1
         }
     ],
     "ISFVSN": "2",
@@ -150,8 +174,8 @@ void main()
         fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + v * vec2(-1, 1) * 2.) / Res.xy));
 
         // add a little "motor" in the center
-        vec2 scr = 2. * ((fragCoord.xy / Res.xy) - vec2(0.5));
-        fragColor.xy += 0.01 * scr.xy / (dot(scr, scr) / 0.1 + 0.3);
+        vec2 scr = 2. * ((fragCoord.xy / Res.xy) - motorLocation);
+        fragColor.xy += motorSize * scr.xy / (10. * dot(scr, scr) + motorAttenuation);
 
         fragColor = (1. - inputImageAmount) * fragColor + inputImageAmount * IMG_PIXEL(inputImage, fragCoord.xy);
 
