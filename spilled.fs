@@ -19,6 +19,14 @@
             "MAX": 1
         },
         {
+            "NAME": "agitation",
+            "LABEL": "Agitation (whole number)",
+            "TYPE": "float",
+            "DEFAULT": 2,
+            "MIN": 0,
+            "MAX": 10
+        },
+        {
             "NAME": "motorLocation",
             "LABEL": "Motor location",
             "TYPE": "point2D",
@@ -66,17 +74,9 @@
 #define iFrame FRAMEINDEX
 #define iResolution RENDERSIZE
 
-#define RotNum 5
 //#define SUPPORT_EVEN_ROTNUM
 
 #define Res  RENDERSIZE
-
-
-const float ang = 2. * 3.1415926535 / float(RotNum);
-mat2 m = mat2( cos(ang), sin(ang),
-              -sin(ang), cos(ang));
-mat2 mh = mat2( cos(ang * 0.5), sin(ang * 0.5),
-               -sin(ang * 0.5), cos(ang * 0.5));
 
 // Hash function from (https://www.shadertoy.com/view/4djSRW), MIT-licensed:
 //
@@ -133,6 +133,15 @@ void main()
     {
         vec2 pos = fragCoord.xy;
         float rnd = randS(vec2(TIME / Res.x, 0.5 / Res.y)).x;
+
+        int RotNum = 2 * int(agitation) + 1;
+        float ang = 2. * 3.1415926535 / float(RotNum);
+        mat2 m = mat2( cos(ang), sin(ang),
+                      -sin(ang), cos(ang));
+#ifdef SUPPORT_EVEN_ROTNUM
+        mat2 mh = mat2( cos(ang * 0.5), sin(ang * 0.5),
+                       -sin(ang * 0.5), cos(ang * 0.5));
+#endif
 
         vec2 b = vec2(cos(ang * rnd), sin(ang * rnd));
         vec2 v = vec2(0.);
