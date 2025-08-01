@@ -110,7 +110,7 @@
 
 #define Res  RENDERSIZE
 
-// Hash function from https://www.shadertoy.com/view/4djSRW, MIT-licensed:
+// Hash function from <https://www.shadertoy.com/view/4djSRW>, MIT-licensed:
 //
 // Copyright © 2014 David Hoskins.
 //
