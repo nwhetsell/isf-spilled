@@ -73,7 +73,7 @@
 
 
 const float ang = 2. * 3.1415926535 / float(RotNum);
-mat2 m = mat2( cos(ang),  sin(ang),
+mat2 m = mat2( cos(ang), sin(ang),
               -sin(ang), cos(ang));
 mat2 mh = mat2( cos(ang * 0.5), sin(ang * 0.5),
                -sin(ang * 0.5), cos(ang * 0.5));
@@ -171,7 +171,7 @@ void main()
             b *= 2.;
         }
 
-        fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + v * vec2(-1, 1) * 2.) / Res.xy));
+        fragColor = IMG_NORM_PIXEL(bufferA, fract((pos + 2. * vec2(-1., 1.) * v) / Res.xy));
 
         // add a little "motor" in the center
         vec2 scr = 2. * ((fragCoord.xy / Res.xy) - motorLocation);
