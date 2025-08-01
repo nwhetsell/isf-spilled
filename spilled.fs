@@ -99,11 +99,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
-vec4 hash42(vec2 p)
+float hash11(float p)
 {
-	vec4 p4 = fract(vec4(p.xyxy) * vec4(0.1031, 0.1030, 0.0973, 0.1099));
-    p4 += dot(p4, p4.wzxy + 33.33);
-    return fract((p4.xxyz + p4.yzzw) * p4.zywx);
+    p = fract(p * 0.1031);
+    p *= p + 33.33;
+    p *= p + p;
+    return fract(p);
 }
 
 
@@ -127,7 +128,7 @@ void main()
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
         vec2 pos = fragCoord.xy;
-        float rnd = (hash42(vec2(TIME / Res.x, 0.5 / Res.y)) - vec4(0.5)).x;
+        float rnd = hash11(TIME / Res.x);
 
         int RotNum = 2 * int(agitation) + 1;
         float ang = 2. * 3.1415926535 / float(RotNum);
