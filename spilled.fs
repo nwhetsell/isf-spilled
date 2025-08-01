@@ -106,11 +106,6 @@ vec4 hash42(vec2 p)
     return fract((p4.xxyz + p4.yzzw) * p4.zywx);
 }
 
-vec4 randS(vec2 uv)
-{
-    return hash42(uv) - vec4(0.5);
-}
-
 
 float getVal(vec2 uv)
 {
@@ -132,7 +127,7 @@ void main()
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
         vec2 pos = fragCoord.xy;
-        float rnd = randS(vec2(TIME / Res.x, 0.5 / Res.y)).x;
+        float rnd = (hash42(vec2(TIME / Res.x, 0.5 / Res.y)) - vec4(0.5)).x;
 
         int RotNum = 2 * int(agitation) + 1;
         float ang = 2. * 3.1415926535 / float(RotNum);
