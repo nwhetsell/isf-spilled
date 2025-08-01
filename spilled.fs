@@ -189,7 +189,6 @@ void main()
         vec3 n = vec3(getGrad(uv, 1. / iResolution.y), 150.);
         //n *= n;
         n = normalize(n);
-        // fragColor = vec4(n, 1.);
         vec3 light = normalize(vec3(1., 1., 2.));
         float diff = clamp(dot(n, light), 0.5, 1.);
         float spec = clamp(dot(reflect(light, n), vec3(0., 0., -1.)), 0., 1.);
