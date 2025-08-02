@@ -83,6 +83,30 @@
             "MAX": 1
         },
         {
+            "NAME": "lightRadius",
+            "LABEL": "Light distance",
+            "TYPE": "float",
+            "DEFAULT": 2.4494897428,
+            "MIN": 0,
+            "MAX": 10
+        },
+        {
+            "NAME": "lightPhi",
+            "LABEL": "Light phi (degrees)",
+            "TYPE": "float",
+            "DEFAULT": 35.2643896828,
+            "MIN": 0,
+            "MAX": 180
+        },
+        {
+            "NAME": "lightTheta",
+            "LABEL": "Light theta (degrees)",
+            "TYPE": "float",
+            "DEFAULT": 45,
+            "MIN": 0,
+            "MAX": 360
+        },
+        {
             "NAME": "agitation",
             "LABEL": "Agitation (whole number)",
             "TYPE": "float",
@@ -104,6 +128,11 @@
     ]
 }
 */
+
+// The default light parameters are:
+//   lightRadius = length(vec3(1, 1, 2)) = sqrt(1 + 1 + 2 * 2) ≈ 2.4494897428
+//   lightPhi = acos(2 / lightRadius) ≈ 35.2643896828°
+//   lightTheta = atan2(1, 1) = atan(1) = pi / 4 = 45°
 
 // #define SUPPORT_EVEN_ROTNUM
 
@@ -237,10 +266,20 @@ void main()
 #endif
 
         n = normalize(spread_n);
-        vec3 light = normalize(vec3(1., 1., 2.));
+
+#define PI 3.1415926535897932384626433832795
+#define DEG2RAD (PI / 180.0)
+        float lightThetaInRadians = lightTheta * DEG2RAD;
+        float lightPhiInRadians = lightPhi * DEG2RAD;
+        vec3 light = normalize(lightRadius * vec3(
+            cos(lightThetaInRadians) * sin(lightPhiInRadians),
+            sin(lightThetaInRadians) * sin(lightPhiInRadians),
+            cos(lightPhiInRadians)
+        ));
         float diff = clamp(dot(n, light), 0.5, 1.);
         float spec = clamp(dot(reflect(light, n), vec3(0., 0., -1.)), 0., 1.);
         spec = pow(spec, 36.) * 2.5;
+
     	gl_FragColor = IMG_NORM_PIXEL(mainPass, uv) * vec4(diff) + specularReflectionAmount * vec4(spec);
     }
 }
