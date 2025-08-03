@@ -251,7 +251,7 @@ void main()
             gl_FragColor = IMG_PIXEL(inputImage, pos);
         }
     }
-    else if (PASSINDEX == 1) // ShaderToy Image
+    else // ShaderToy Image
     {
         vec2 d = vec2(inverseSize.y, 0.);
         vec3 n = vec3(
