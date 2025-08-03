@@ -134,8 +134,6 @@
 //   lightPhi = acos(2 / lightRadius) ≈ 35.2643896828°
 //   lightTheta = atan2(1, 1) = atan(1) = pi / 4 = 45°
 
-// #define SUPPORT_EVEN_ROTNUM
-
 // Hash function from <https://www.shadertoy.com/view/4djSRW>, MIT-licensed:
 //
 // Copyright © 2014 David Hoskins.
@@ -166,6 +164,10 @@ float hash11(float p)
 }
 
 
+// #define SUPPORT_EVEN_ROTNUM
+
+#define PI 3.1415926535897932384626433832795
+
 void main()
 {
     vec2 pos = gl_FragCoord.xy;
@@ -175,7 +177,7 @@ void main()
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
         int RotNum = 2 * int(agitation) + 1;
-        float ang = 2. * 3.1415926535 / float(RotNum);
+        float ang = 2. * PI / float(RotNum);
         mat2 m = mat2( cos(ang), sin(ang),
                       -sin(ang), cos(ang));
 #ifdef SUPPORT_EVEN_ROTNUM
@@ -267,7 +269,6 @@ void main()
 
         n = normalize(spread_n);
 
-#define PI 3.1415926535897932384626433832795
 #define DEG2RAD (PI / 180.0)
         float lightThetaInRadians = lightTheta * DEG2RAD;
         float lightPhiInRadians = lightPhi * DEG2RAD;
