@@ -192,8 +192,7 @@ float hash11(float p)
 void main()
 {
     vec2 pos = gl_FragCoord.xy;
-    vec2 inverseSize = 1. / RENDERSIZE;
-    vec2 uv = pos * inverseSize;
+    vec2 uv = pos / RENDERSIZE;
 
     if (PASSINDEX == 0) // ShaderToy Buffer A
     {
@@ -204,8 +203,7 @@ void main()
         mat2 mh = rotate2d(ang * 0.5);
 #endif
 
-        float rnd = hash11(TIME / RENDERSIZE.x);
-        vec2 b = polar2cart(vec2(ang * rnd, 1));
+        vec2 b = polar2cart(vec2(ang * hash11(TIME / RENDERSIZE.x), 1));
         vec2 v = vec2(0);
 
         float bbMax = dripSize * RENDERSIZE.y;
@@ -272,7 +270,7 @@ void main()
     }
     else // ShaderToy Image
     {
-        vec2 d = vec2(inverseSize.y, 0);
+        vec2 d = vec2(1 / RENDERSIZE.y, 0);
         vec3 n = vec3(
             (length(IMG_NORM_PIXEL(mainPass, uv + d.xy).xyz) - length(IMG_NORM_PIXEL(mainPass, uv - d.xy).xyz)) * RENDERSIZE.y,
             (length(IMG_NORM_PIXEL(mainPass, uv + d.yx).xyz) - length(IMG_NORM_PIXEL(mainPass, uv - d.yx).xyz)) * RENDERSIZE.y,
